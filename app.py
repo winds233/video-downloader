@@ -21,31 +21,36 @@ def download():
     uid = str(uuid.uuid4())
 
     if format_type == 'mp3':
-        output_path = os.path.join(DOWNLOAD_FOLDER, f'{uid}.mp3')
+        filename = f'{uid}.mp3'
+        output_path = os.path.join(DOWNLOAD_FOLDER, filename)
         ydl_opts = {
             'format': 'bestaudio/best',
             'outtmpl': output_path.replace('.mp3', '.%(ext)s'),
-            'cookiefile': 'cookies.txt',
-	            'postprocessors': [{
+            'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': 'mp3',
                 'preferredquality': '192',
             }],
+            'cookiefile': 'cookies.txt',
         }
-    else:
-        output_path = os.path.join(DOWNLOAD_FOLDER, f'{uid}.mp4')
+
+    elif format_type == 'mp4':
+        filename = f'{uid}.mp4'
+        output_path = os.path.join(DOWNLOAD_FOLDER, filename)
         ydl_opts = {
             'format': 'best',
             'outtmpl': output_path,
             'cookiefile': 'cookies.txt',
         }
 
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
-        return send_file(output_path, as_attachment=True)
-    except Exception as e:
-        return f'Erro: {str(e)}'
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([url])
+
+    return render_template('index.html', download_link=f'/download_file/{filename}')
+
+@app.route('/download_file/<filename>')
+def download_file(filename):
+    return send_from_directory(DOWNLOAD_FOLDER, filename, as_attachment=True)
 
 
 
