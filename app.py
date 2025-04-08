@@ -1,3 +1,5 @@
+
+
 import os
 from flask import Flask, request, render_template, send_file
 import yt_dlp
@@ -5,8 +7,9 @@ import uuid
 
 app = Flask(__name__)
 DOWNLOAD_FOLDER = 'downloads'
-os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
+
+os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -22,7 +25,8 @@ def download():
         ydl_opts = {
             'format': 'bestaudio/best',
             'outtmpl': output_path.replace('.mp3', '.%(ext)s'),
-            'postprocessors': [{
+            'cookiefile': 'cookies.txt',
+	            'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': 'mp3',
                 'preferredquality': '192',
@@ -33,13 +37,15 @@ def download():
         ydl_opts = {
             'format': 'best',
             'outtmpl': output_path,
+            'cookiefile': 'cookies.txt',
         }
 
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([url])
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+        return send_file(output_path, as_attachment=True)
+    except Exception as e:
+        return f'Erro: {str(e)}'
 
-    final_path = output_path if os.path.exists(output_path) else output_path.replace('.mp4', '.webm')
-    return send_file(final_path, as_attachment=True)
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+
