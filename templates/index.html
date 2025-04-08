@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Conversor de Vídeo</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding-top: 50px; }
+        input, select, button { padding: 10px; margin: 10px; width: 300px; }
+        button { background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+    </style>
+</head>
+<body>
+    <h1>Baixar Vídeo ou Áudio</h1>
+    <form action="/download" method="post">
+        <input type="text" name="url" placeholder="Cole o link aqui" required><br>
+        <select name="format">
+            <option value="mp4">Vídeo (.mp4)</option>
+            <option value="mp3">Áudio (.mp3)</option>
+        </select><br>
+        <button type="submit">Baixar</button>
+    </form>
+</body>
+</html>
